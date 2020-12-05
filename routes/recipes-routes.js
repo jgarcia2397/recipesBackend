@@ -33,4 +33,13 @@ router.get('/:rid', (req, res, next) => {
 	res.json({ recipe: recipe });
 });
 
+router.get('/user/:uid', (req, res, next) => {
+    const userId = req.params.uid;
+    const recipe = dummyRecipes.find(r => {
+        return r.creator === userId;
+    });
+
+    res.json({ recipe: recipe });
+});
+
 module.exports = router;
