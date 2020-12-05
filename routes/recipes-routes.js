@@ -2,9 +2,35 @@ const express = require('express');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-	console.log('GET request in Recipes');
-	res.json({ message: 'Routing works!' });
+const dummyRecipes = [
+	{
+		id: 'r1',
+		basicDetails: {
+			recipeName: 'PB & J Sandwich',
+			prepTime: '1',
+			prepTimeUnits: 'minutes',
+			cookTime: '2',
+			cookTimeUnits: 'minutes',
+			servings: '1',
+			difficulty: 'Easy',
+		},
+		ingredients: ['2 slices of bread', 'jam', 'peanut butter'],
+		directions: [
+			'toast slices of bread',
+			'spread PB and J on toast',
+			'stick two pieces of toast together',
+		],
+		creator: 'u1',
+	},
+];
+
+router.get('/:rid', (req, res, next) => {
+	const recipeId = req.params.rid;
+	const recipe = dummyRecipes.find(r => {
+		return r.id === recipeId;
+	});
+
+	res.json({ recipe: recipe });
 });
 
 module.exports = router;
