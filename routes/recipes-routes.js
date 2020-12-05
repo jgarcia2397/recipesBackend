@@ -30,16 +30,28 @@ router.get('/:rid', (req, res, next) => {
 		return r.id === recipeId;
 	});
 
+	if (!recipe) {
+		return res
+			.status(404)
+			.json({ message: 'Could not find a recipe for the given recipe ID.' });
+	}
+
 	res.json({ recipe: recipe });
 });
 
 router.get('/user/:uid', (req, res, next) => {
-    const userId = req.params.uid;
-    const recipe = dummyRecipes.find(r => {
-        return r.creator === userId;
+	const userId = req.params.uid;
+	const recipe = dummyRecipes.find(r => {
+		return r.creator === userId;
     });
+    
+    if (!recipe) {
+		return res
+			.status(404)
+			.json({ message: 'Could not find a recipe for the given user ID.' });
+	}
 
-    res.json({ recipe: recipe });
+	res.json({ recipe: recipe });
 });
 
 module.exports = router;
