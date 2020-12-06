@@ -2,12 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const recipesRoutes = require('./routes/recipes-routes');
+const HttpError = require('./models/http-error');
 
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use('/api/recipes', recipesRoutes);
+
+app.use((req, res, next) => {
+	return next(new HttpError('Could not find this route.', 404));
+});
 
 // error handling middleware
 app.use((error, req, res, next) => {
