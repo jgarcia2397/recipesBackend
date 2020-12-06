@@ -1,5 +1,7 @@
 const express = require('express');
 
+const HttpError = require('../models/http-error');
+
 const router = express.Router();
 
 const dummyRecipes = [
@@ -31,9 +33,9 @@ router.get('/:rid', (req, res, next) => {
 	});
 
 	if (!recipe) {
-        const error = new Error('Could not find a recipe for the given recipe ID.');
-        error.code = 404;
-        return next(error);
+		return next(
+			new HttpError('Could not find a recipe for the given recipe ID.', 404)
+		);
 	}
 
 	res.json({ recipe: recipe });
@@ -43,12 +45,12 @@ router.get('/user/:uid', (req, res, next) => {
 	const userId = req.params.uid;
 	const recipe = dummyRecipes.find(r => {
 		return r.creator === userId;
-    });
-    
-    if (!recipe) {
-		const error = new Error('Could not find a recipe for the given user ID.');
-        error.code = 404;
-        return next(error);
+	});
+
+	if (!recipe) {
+		return next(
+			new HttpError('Could not find a recipe for the given user ID.', 404)
+		);
 	}
 
 	res.json({ recipe: recipe });
