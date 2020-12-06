@@ -31,9 +31,9 @@ router.get('/:rid', (req, res, next) => {
 	});
 
 	if (!recipe) {
-		return res
-			.status(404)
-			.json({ message: 'Could not find a recipe for the given recipe ID.' });
+        const error = new Error('Could not find a recipe for the given recipe ID.');
+        error.code = 404;
+        return next(error);
 	}
 
 	res.json({ recipe: recipe });
@@ -46,9 +46,9 @@ router.get('/user/:uid', (req, res, next) => {
     });
     
     if (!recipe) {
-		return res
-			.status(404)
-			.json({ message: 'Could not find a recipe for the given user ID.' });
+		const error = new Error('Could not find a recipe for the given user ID.');
+        error.code = 404;
+        return next(error);
 	}
 
 	res.json({ recipe: recipe });
