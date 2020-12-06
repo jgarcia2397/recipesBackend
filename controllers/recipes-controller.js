@@ -21,6 +21,26 @@ const dummyRecipes = [
 		],
 		creator: 'u1',
 	},
+	{
+		id: 'r2',
+		basicDetails: {
+			recipeName: 'Ham Sandwich',
+			prepTime: '2',
+			prepTimeUnits: 'minutes',
+			cookTime: '3',
+			cookTimeUnits: 'minutes',
+			servings: '1',
+			difficulty: 'Easy',
+		},
+		ingredients: ['2 slices of bread', 'ham', 'swiss cheese', 'mayo'],
+		directions: [
+			'toast slices of bread',
+			'spread mayo',
+			'place ham and cheese on toast',
+			'stick two pieces of toast together',
+		],
+		creator: 'u1',
+	},
 ];
 
 const getRecipeByRecipeId = (req, res, next) => {
@@ -38,23 +58,23 @@ const getRecipeByRecipeId = (req, res, next) => {
 	res.json({ recipe: recipe });
 };
 
-const getRecipeByUserId = (req, res, next) => {
+const getAllRecipesByUserId = (req, res, next) => {
 	const userId = req.params.uid;
-	const recipe = dummyRecipes.find(r => {
+	const recipes = dummyRecipes.filter(r => {
 		return r.creator === userId;
 	});
 
-	if (!recipe) {
+	if (!recipes || recipes.length === 0) {
 		return next(
-			new HttpError('Could not find a recipe for the given user ID.', 404)
+			new HttpError('Could not find recipes for the given user ID.', 404)
 		);
 	}
 
-	res.json({ recipe: recipe });
+	res.json({ recipes: recipes });
 };
 
 const createRecipe = (req, res, next) => {
-	const { id, basicDetails, ingredients, directions, creator } = req.body;
+	const { basicDetails, ingredients, directions, creator } = req.body;
 
 	const createdRecipe = {
 		id: uuidv4(),
@@ -67,6 +87,8 @@ const createRecipe = (req, res, next) => {
 	dummyRecipes.push(createdRecipe);
 	res.status(201).json({ recipe: createdRecipe });
 };
+
+// ToDo: deleteRecipe?
 
 const updateRecipe = (req, res, next) => {
 	const recipeId = req.params.rid;
@@ -90,6 +112,6 @@ const updateRecipe = (req, res, next) => {
 };
 
 exports.getRecipeByRecipeId = getRecipeByRecipeId;
-exports.getRecipeByUserId = getRecipeByUserId;
+exports.getAllRecipesByUserId = getAllRecipesByUserId;
 exports.createRecipe = createRecipe;
 exports.updateRecipe = updateRecipe;

@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/:rid', recipesControllers.getRecipeByRecipeId);
 
-router.get('/user/:uid', recipesControllers.getRecipeByUserId);
+router.get('/user/:uid', recipesControllers.getAllRecipesByUserId);
 
 router.post('/', recipesControllers.createRecipe);
 
