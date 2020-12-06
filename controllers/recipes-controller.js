@@ -1,4 +1,5 @@
 const HttpError = require('../models/http-error');
+const { v4: uuidv4 } = require('uuid');
 
 const dummyRecipes = [
 	{
@@ -52,5 +53,21 @@ const getRecipeByUserId = (req, res, next) => {
 	res.json({ recipe: recipe });
 };
 
+const createRecipe = (req, res, next) => {
+	const { id, basicDetails, ingredients, directions, creator } = req.body;
+
+	const createdRecipe = {
+		id: uuidv4(),
+		basicDetails,
+		ingredients,
+		directions,
+		creator,
+	};
+
+	dummyRecipes.push(createdRecipe);
+	res.status(201).json({ recipe: createdRecipe });
+};
+
 exports.getRecipeByRecipeId = getRecipeByRecipeId;
 exports.getRecipeByUserId = getRecipeByUserId;
+exports.createRecipe = createRecipe;

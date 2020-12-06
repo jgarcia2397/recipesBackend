@@ -5,6 +5,8 @@ const recipesRoutes = require('./routes/recipes-routes');
 
 const app = express();
 
+app.use(bodyParser.json());
+
 app.use('/api/recipes', recipesRoutes);
 
 // error handling middleware
