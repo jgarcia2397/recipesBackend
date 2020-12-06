@@ -10,4 +10,6 @@ router.get('/user/:uid', recipesControllers.getRecipeByUserId);
 
 router.post('/', recipesControllers.createRecipe);
 
+router.patch('/:rid', recipesControllers.updateRecipe);
+
 module.exports = router;
