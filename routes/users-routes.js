@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get('/:uid', usersControllers.getUserByUserId);
 
+router.patch('/:uid', usersControllers.updateUserProfile);
+
 module.exports = router;
