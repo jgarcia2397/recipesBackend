@@ -1,8 +1,11 @@
 const HttpError = require('../models/http-error');
+const { v4: uuidv4 } = require('uuid');
 
 const dummyUsers = [
 	{
 		id: 'u1',
+		email: 'josh@test.com',
+		password: 'testPassword',
 		name: 'Joshua Garcia',
 		title: 'Master Chef',
 		aboutMe: 'Gordon Ramsey is my hero but I can barely cook :( sad life...',
@@ -48,5 +51,35 @@ const updateUserProfile = (req, res, next) => {
 	res.status(200).json({ user: userToUpdate });
 };
 
+const userSignup = (req, res, next) => {
+	const { name, email, password } = req.body;
+
+	const existingUser = dummyUsers.find(u => {
+		return u.email === email;
+	});
+
+	if (existingUser) {
+		return next(new HttpError('A user with this email already exists.', 422));
+	}
+
+	const newUser = {
+		id: uuidv4(),
+		email,
+		password,
+		name,
+		title: 'Your Title',
+		aboutMe: 'Tell us a bit about yourself!',
+		favesToCook: 'Feel free to brag about your most famous dishes!',
+	};
+
+	dummyUsers.push(newUser);
+
+	res.status(201).json({ user: newUser });
+};
+
+const userLogin = (req, res, next) => {};
+
 exports.getUserByUserId = getUserByUserId;
 exports.updateUserProfile = updateUserProfile;
+exports.userSignup = userSignup;
+exports.userLogin = userLogin;
