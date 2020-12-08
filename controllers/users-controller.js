@@ -77,7 +77,27 @@ const userSignup = (req, res, next) => {
 	res.status(201).json({ user: newUser });
 };
 
-const userLogin = (req, res, next) => {};
+const userLogin = (req, res, next) => {
+	const { email, password } = req.body;
+
+	const existingUser = dummyUsers.find(u => {
+		return u.email === email;
+	});
+
+	if (!existingUser) {
+		return next(
+			new HttpError('This user email is not registered, please try again.', 401)
+		);
+	}
+
+	if (existingUser.password !== password) {
+		return next(
+			new HttpError('Provided password is invalid, please try again.', 401)
+		);
+	}
+
+	res.json({ message: 'Login successful!' });
+};
 
 exports.getUserByUserId = getUserByUserId;
 exports.updateUserProfile = updateUserProfile;
