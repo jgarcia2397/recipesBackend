@@ -1,5 +1,6 @@
 const HttpError = require('../models/http-error');
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator');
 
 const dummyRecipes = [
 	{
@@ -74,6 +75,17 @@ const getAllRecipesByUserId = (req, res, next) => {
 };
 
 const createRecipe = (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return next(
+			new HttpError(
+				'The inputs you have passed are invalid, please check you data.',
+				422
+			)
+		);
+	}
+
 	const { basicDetails, ingredients, directions, creator } = req.body;
 
 	const createdRecipe = {
