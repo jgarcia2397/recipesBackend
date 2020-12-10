@@ -103,6 +103,17 @@ const createRecipe = (req, res, next) => {
 // ToDo: deleteRecipe?
 
 const updateRecipe = (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return next(
+			new HttpError(
+				'The inputs you have passed are invalid, please check you data.',
+				422
+			)
+		);
+	}
+
 	const recipeId = req.params.rid;
 	const { basicDetails, ingredients, directions } = req.body;
 

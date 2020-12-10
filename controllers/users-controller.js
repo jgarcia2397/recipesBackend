@@ -1,5 +1,6 @@
 const HttpError = require('../models/http-error');
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator');
 
 const dummyUsers = [
 	{
@@ -29,6 +30,17 @@ const getUserByUserId = (req, res, next) => {
 };
 
 const updateUserProfile = (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return next(
+			new HttpError(
+				'The inputs you have passed are invalid, please check you data.',
+				422
+			)
+		);
+	}
+
 	const userId = req.params.uid;
 	const { name, title, aboutMe, favesToCook } = req.body;
 
@@ -52,6 +64,17 @@ const updateUserProfile = (req, res, next) => {
 };
 
 const userSignup = (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return next(
+			new HttpError(
+				'The inputs you have passed are invalid, please check you data.',
+				422
+			)
+		);
+	}
+
 	const { name, email, password } = req.body;
 
 	const existingUser = dummyUsers.find(u => {
@@ -78,6 +101,17 @@ const userSignup = (req, res, next) => {
 };
 
 const userLogin = (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return next(
+			new HttpError(
+				'The inputs you have passed are invalid, please check you data.',
+				422
+			)
+		);
+	}
+
 	const { email, password } = req.body;
 
 	const existingUser = dummyUsers.find(u => {
