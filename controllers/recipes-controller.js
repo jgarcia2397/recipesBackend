@@ -1,6 +1,8 @@
-const HttpError = require('../models/http-error');
 const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
+
+const HttpError = require('../models/http-error');
+const Recipe = require('../models/recipe');
 
 const dummyRecipes = [
 	{
@@ -74,7 +76,7 @@ const getAllRecipesByUserId = (req, res, next) => {
 	res.json({ recipes: recipes });
 };
 
-const createRecipe = (req, res, next) => {
+const createRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -88,15 +90,24 @@ const createRecipe = (req, res, next) => {
 
 	const { basicDetails, ingredients, directions, creator } = req.body;
 
-	const createdRecipe = {
-		id: uuidv4(),
+	const createdRecipe = new Recipe({
 		basicDetails,
 		ingredients,
 		directions,
+		image: 'https://i.ytimg.com/vi/RoHWiA6pogg/maxresdefault.jpg',
 		creator,
-	};
+	});
 
-	dummyRecipes.push(createdRecipe);
+	try {
+		await createdRecipe.save();
+	} catch (err) {
+		const error = new HttpError(
+			'Creating recipe failed, please try again.',
+			500
+		);
+		return next(error);
+	}
+
 	res.status(201).json({ recipe: createdRecipe });
 };
 
