@@ -69,11 +69,19 @@ const getRecipeByRecipeId = async (req, res, next) => {
 	res.json({ recipe: recipe.toObject({ getters: true }) });
 };
 
-const getAllRecipesByUserId = (req, res, next) => {
+const getAllRecipesByUserId = async (req, res, next) => {
 	const userId = req.params.uid;
-	const recipes = dummyRecipes.filter(r => {
-		return r.creator === userId;
-	});
+
+	let recipes;
+	try {
+		recipes = await Recipe.find({ creator: userId });
+	} catch (err) {
+		const error = new HttpError(
+			'Something went wrong, could not find recipes of this user.',
+			500
+		);
+		return next(error);
+	}
 
 	if (!recipes || recipes.length === 0) {
 		return next(
@@ -81,7 +89,9 @@ const getAllRecipesByUserId = (req, res, next) => {
 		);
 	}
 
-	res.json({ recipes: recipes });
+	res.json({
+		recipes: recipes.map(recipe => recipe.toObject({ getters: true })),
+	});
 };
 
 const createRecipe = async (req, res, next) => {
