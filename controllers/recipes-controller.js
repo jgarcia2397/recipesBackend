@@ -131,7 +131,7 @@ const createRecipe = async (req, res, next) => {
 
 // ToDo: deleteRecipe?
 
-const updateRecipe = (req, res, next) => {
+const updateRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -146,21 +146,31 @@ const updateRecipe = (req, res, next) => {
 	const recipeId = req.params.rid;
 	const { basicDetails, ingredients, directions } = req.body;
 
-	const recipeToUpdate = {
-		...dummyRecipes.find(r => {
-			return r.id === recipeId;
-		}),
-	};
-	const recipeIndex = dummyRecipes.findIndex(r => {
-		return r.id === recipeId;
-	});
+	let recipeToUpdate;
+	try {
+		recipeToUpdate = await Recipe.findById(recipeId);
+	} catch (err) {
+		const error = new HttpError(
+			'Something went wrong, could not find recipe to update.',
+			500
+		);
+		return next(error);
+	}
 
 	recipeToUpdate.basicDetails = basicDetails;
 	recipeToUpdate.ingredients = [...ingredients];
 	recipeToUpdate.directions = [...directions];
 
-	dummyRecipes[recipeIndex] = recipeToUpdate;
-	res.status(200).json({ recipe: recipeToUpdate });
+	try {
+		await recipeToUpdate.save();
+	} catch (err) {
+		const error = new HttpError(
+			'Something went wrong, could not save updated recipe.',
+			500
+		);
+		return next(error);
+	}
+	res.status(200).json({ recipe: recipeToUpdate.toObject({ getters: true }) });
 };
 
 exports.getRecipeByRecipeId = getRecipeByRecipeId;
