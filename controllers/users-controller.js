@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
+const User = require('../models/user');
 
 const dummyUsers = [
 	{
@@ -64,7 +65,7 @@ const updateUserProfile = (req, res, next) => {
 	res.status(200).json({ user: userToUpdate });
 };
 
-const userSignup = (req, res, next) => {
+const userSignup = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -78,27 +79,39 @@ const userSignup = (req, res, next) => {
 
 	const { name, email, password } = req.body;
 
-	const existingUser = dummyUsers.find(u => {
-		return u.email === email;
-	});
-
-	if (existingUser) {
-		return next(new HttpError('A user with this email already exists.', 422));
+	let existingUser;
+	try {
+		existingUser = await User.findOne({ email: email });
+	} catch (err) {
+		const error = new HttpError('Signup failed, please try again.', 500);
+		return next(error);
 	}
 
-	const newUser = {
-		id: uuidv4(),
+	if (existingUser) {
+		const error = new HttpError('A user with this email already exists.', 422);
+		return next(error);
+	}
+
+	const newUser = new User({
+		name,
 		email,
 		password,
-		name,
 		title: 'Your Title',
 		aboutMe: 'Tell us a bit about yourself!',
 		favesToCook: 'Feel free to brag about your most famous dishes!',
-	};
+		image:
+			'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png',
+		recipes: 'PB&J Sandwich, Spaghetti',
+	});
 
-	dummyUsers.push(newUser);
+	try {
+		await newUser.save();
+	} catch (err) {
+		const error = new HttpError('Signup failed, please try again.', 500);
+		return next(error);
+	}
 
-	res.status(201).json({ user: newUser });
+	res.status(201).json({ user: newUser.toObject({ getters: true }) });
 };
 
 const userLogin = (req, res, next) => {
