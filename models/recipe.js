@@ -15,7 +15,7 @@ const recipeSchema = new Schema({
 	ingredients: [{ type: String, required: true }],
 	directions: [{ type: String, required: true }],
 	image: { type: String, required: true },
-	creator: { type: String, required: true },
+	creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
 module.exports = mongoose.model('Recipe', recipeSchema);

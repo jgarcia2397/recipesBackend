@@ -11,7 +11,7 @@ const userSchema = new Schema({
 	aboutMe: { type: String, required: true },
     favesToCook: { type: String, required: true },
     image: { type: String, required: true },
-    recipes: { type: String, required: true },      // use dynamic ObjectId here later when connecting recipes to user
+    recipes: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Recipe' }],
 });
 
 userSchema.plugin(uniqueValidator);
