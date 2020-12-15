@@ -114,7 +114,7 @@ const userSignup = async (req, res, next) => {
 	res.status(201).json({ user: newUser.toObject({ getters: true }) });
 };
 
-const userLogin = (req, res, next) => {
+const userLogin = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -128,9 +128,13 @@ const userLogin = (req, res, next) => {
 
 	const { email, password } = req.body;
 
-	const existingUser = dummyUsers.find(u => {
-		return u.email === email;
-	});
+	let existingUser;
+	try {
+		existingUser = await User.findOne({ email: email });
+	} catch (err) {
+		const error = new HttpError('Login failed, please try again.', 500);
+		return next(error);
+	}
 
 	if (!existingUser) {
 		return next(
@@ -144,7 +148,10 @@ const userLogin = (req, res, next) => {
 		);
 	}
 
-	res.json({ message: 'Login successful!' });
+	res.json({
+		message: 'Login successful!',
+		user: existingUser.toObject({ getters: true }),
+	});
 };
 
 exports.getUserByUserId = getUserByUserId;
