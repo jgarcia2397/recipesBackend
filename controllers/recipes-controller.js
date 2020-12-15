@@ -1,8 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Recipe = require('../models/recipe');
+const User = require('../models/user');
 
 const dummyRecipes = [
 	{
@@ -116,8 +118,33 @@ const createRecipe = async (req, res, next) => {
 		creator,
 	});
 
+	let user;
 	try {
-		await createdRecipe.save();
+		user = await User.findById(creator);
+	} catch (err) {
+		const error = new HttpError(
+			'Creating recipe failed, please try again.',
+			500
+		);
+		return next(error);
+	}
+
+	if (!user) {
+		const error = new HttpError(
+			'Could not find existing user with the given ID.',
+			404
+		);
+		return next(error);
+	}
+
+	try {
+		const session = await mongoose.startSession();
+		session.startTransaction();
+		await createdRecipe.save({ session: session });
+
+		user.recipes.push(createdRecipe);
+		await user.save({ session: session });
+		await session.commitTransaction();
 	} catch (err) {
 		const error = new HttpError(
 			'Creating recipe failed, please try again.',
