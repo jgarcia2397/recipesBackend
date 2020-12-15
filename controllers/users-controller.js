@@ -39,7 +39,7 @@ const getUserByUserId = async (req, res, next) => {
 	res.json({ user: user.toObject({ getters: true }) });
 };
 
-const updateUserProfile = (req, res, next) => {
+const updateUserProfile = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -52,25 +52,44 @@ const updateUserProfile = (req, res, next) => {
 	}
 
 	const userId = req.params.uid;
-	const { name, title, aboutMe, favesToCook } = req.body;
+	const { name, title, aboutMe, favesToCook, image } = req.body;
 
-	const userToUpdate = {
-		...dummyUsers.find(u => {
-			return u.id === userId;
-		}),
-	};
-	const userIndex = dummyUsers.findIndex(u => {
-		return u.id === userId;
-	});
+	let userToUpdate;
+	try {
+		userToUpdate = await User.findById(userId);
+	} catch (err) {
+		const error = new HttpError(
+			'Finding user to update failed, please try again.',
+			500
+		);
+		return next(error);
+	}
+
+	if (!userToUpdate) {
+		const error = new HttpError(
+			'Could not find a user for the given user ID.',
+			404
+		);
+		return next(error);
+	}
 
 	userToUpdate.name = name;
 	userToUpdate.title = title;
 	userToUpdate.aboutMe = aboutMe;
 	userToUpdate.favesToCook = favesToCook;
+	userToUpdate.image = image;
 
-	dummyUsers[userIndex] = userToUpdate;
+	try {
+		await userToUpdate.save();
+	} catch (err) {
+		const error = new HttpError(
+			'Updating user profile failed, please try again.',
+			500
+		);
+		return next(error);
+	}
 
-	res.status(200).json({ user: userToUpdate });
+	res.status(200).json({ user: userToUpdate.toObject({ getters: true }) });
 };
 
 const userSignup = async (req, res, next) => {
