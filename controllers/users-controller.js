@@ -16,11 +16,19 @@ const dummyUsers = [
 	},
 ];
 
-const getUserByUserId = (req, res, next) => {
+const getUserByUserId = async (req, res, next) => {
 	const userId = req.params.uid;
-	const user = dummyUsers.find(u => {
-		return u.id === userId;
-	});
+
+	let user;
+	try {
+		user = await User.findById(userId);
+	} catch (err) {
+		const error = new HttpError(
+			'Getting user with given ID failed, please try again.',
+			500
+		);
+		return next(error);
+	}
 
 	if (!user) {
 		return next(
@@ -28,7 +36,7 @@ const getUserByUserId = (req, res, next) => {
 		);
 	}
 
-	res.json({ user: user });
+	res.json({ user: user.toObject({ getters: true }) });
 };
 
 const updateUserProfile = (req, res, next) => {
