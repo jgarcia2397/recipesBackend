@@ -1,52 +1,9 @@
-const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Recipe = require('../models/recipe');
 const User = require('../models/user');
-
-const dummyRecipes = [
-	{
-		id: 'r1',
-		basicDetails: {
-			recipeName: 'PB & J Sandwich',
-			prepTime: '1',
-			prepTimeUnits: 'minutes',
-			cookTime: '2',
-			cookTimeUnits: 'minutes',
-			servings: '1',
-			difficulty: 'Easy',
-		},
-		ingredients: ['2 slices of bread', 'jam', 'peanut butter'],
-		directions: [
-			'toast slices of bread',
-			'spread PB and J on toast',
-			'stick two pieces of toast together',
-		],
-		creator: 'u1',
-	},
-	{
-		id: 'r2',
-		basicDetails: {
-			recipeName: 'Ham Sandwich',
-			prepTime: '2',
-			prepTimeUnits: 'minutes',
-			cookTime: '3',
-			cookTimeUnits: 'minutes',
-			servings: '1',
-			difficulty: 'Easy',
-		},
-		ingredients: ['2 slices of bread', 'ham', 'swiss cheese', 'mayo'],
-		directions: [
-			'toast slices of bread',
-			'spread mayo',
-			'place ham and cheese on toast',
-			'stick two pieces of toast together',
-		],
-		creator: 'u1',
-	},
-];
 
 const getRecipeByRecipeId = async (req, res, next) => {
 	const recipeId = req.params.rid;
