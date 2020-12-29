@@ -110,7 +110,7 @@ const createRecipe = async (req, res, next) => {
 		return next(error);
 	}
 
-	res.status(201).json({ recipe: createdRecipe });
+	res.status(201).json({ recipe: createdRecipe.toObject({ getters: true }) });
 };
 
 // ToDo: deleteRecipe?
