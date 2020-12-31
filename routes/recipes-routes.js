@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 
 const recipesControllers = require('../controllers/recipes-controller');
+const fileUpload = require('../middleware/file-upload');
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.get('/user/:uid', recipesControllers.getAllRecipesByUserId);
 
 router.post(
 	'/',
+	fileUpload.single('image'),
 	[
 		check('basicDetails.recipeName').not().isEmpty(),
 		check('basicDetails.prepTime').isNumeric(),
