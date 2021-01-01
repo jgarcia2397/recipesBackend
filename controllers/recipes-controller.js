@@ -77,7 +77,6 @@ const createRecipe = async (req, res, next) => {
 		difficulty,
 		ingredients,
 		directions,
-		image,
 		creator,
 	} = req.body;
 
@@ -96,7 +95,7 @@ const createRecipe = async (req, res, next) => {
 		ingredients,
 		directions,
 		// image: 'https://i.ytimg.com/vi/RoHWiA6pogg/maxresdefault.jpg',
-		image,
+		image: req.file.path,
 		creator,
 	});
 
