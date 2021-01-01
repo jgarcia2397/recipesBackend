@@ -56,6 +56,8 @@ const getAllRecipesByUserId = async (req, res, next) => {
 const createRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
 
+	console.log(errors);
+
 	if (!errors.isEmpty()) {
 		return next(
 			new HttpError(
@@ -65,22 +67,47 @@ const createRecipe = async (req, res, next) => {
 		);
 	}
 
-	const { basicDetails, ingredients, directions, creator } = req.body;
-
-	const createdRecipe = new Recipe({
-		basicDetails,
+	const {
+		recipeName,
+		prepTime,
+		prepTimeUnits,
+		cookTime,
+		cookTimeUnits,
+		servings,
+		difficulty,
 		ingredients,
 		directions,
-		image: 'https://i.ytimg.com/vi/RoHWiA6pogg/maxresdefault.jpg',
+		image,
+		creator,
+	} = req.body;
+
+	const basicDetailsObj = {
+		recipeName,
+		prepTime,
+		prepTimeUnits,
+		cookTime,
+		cookTimeUnits,
+		servings,
+		difficulty,
+	};
+
+	const createdRecipe = new Recipe({
+		basicDetails: basicDetailsObj,
+		ingredients,
+		directions,
+		// image: 'https://i.ytimg.com/vi/RoHWiA6pogg/maxresdefault.jpg',
+		image,
 		creator,
 	});
+
+	console.log(createdRecipe);
 
 	let user;
 	try {
 		user = await User.findById(creator);
 	} catch (err) {
 		const error = new HttpError(
-			'Creating recipe failed, please try again.',
+			'Creating recipe failed while searching for user in database, please try again.',
 			500
 		);
 		return next(error);
