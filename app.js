@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -30,6 +32,12 @@ app.use((req, res, next) => {
 
 // error handling middleware
 app.use((error, req, res, next) => {
+	if (req.file) {
+		fs.unlink(req.file.path, (err) => {
+			console.log(err);
+		});
+	}
+
 	if (res.headerSent) {
 		// response already sent, forward error to next middleware
 		return next(error);
