@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 
 const usersControllers = require('../controllers/users-controller');
+const fileUpload = require('../middleware/file-upload');
 
 const router = express.Router();
 
@@ -16,6 +17,12 @@ router.patch(
 		check('favesToCook').notEmpty(),
 	],
 	usersControllers.updateUserProfile
+);
+
+router.patch(
+	'/:uid',
+	fileUpload.single('image'),
+	usersControllers.updateProfilePic
 );
 
 router.post(
