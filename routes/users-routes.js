@@ -20,7 +20,7 @@ router.patch(
 );
 
 router.patch(
-	'/:uid',
+	'/profilePic/:uid',
 	fileUpload.single('image'),
 	usersControllers.updateProfilePic
 );
