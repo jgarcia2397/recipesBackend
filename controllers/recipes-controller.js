@@ -61,7 +61,7 @@ const createRecipe = async (req, res, next) => {
 	if (!errors.isEmpty()) {
 		return next(
 			new HttpError(
-				'The inputs you have passed are invalid, please check you data.',
+				'The inputs you have passed are invalid, please check your data.',
 				422
 			)
 		);
@@ -147,7 +147,7 @@ const updateRecipe = async (req, res, next) => {
 	if (!errors.isEmpty()) {
 		return next(
 			new HttpError(
-				'The inputs you have passed are invalid, please check you data.',
+				'The inputs you have passed are invalid, please check your data.',
 				422
 			)
 		);
