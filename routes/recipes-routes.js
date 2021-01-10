@@ -50,4 +50,6 @@ router.patch(
 	recipesControllers.updateRecipe
 );
 
+router.delete('/:rid', recipesControllers.deleteRecipe);
+
 module.exports = router;

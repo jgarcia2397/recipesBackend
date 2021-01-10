@@ -56,7 +56,7 @@ const getAllRecipesByUserId = async (req, res, next) => {
 const createRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
 
-	console.log(errors);
+	// console.log(errors);
 
 	if (!errors.isEmpty()) {
 		return next(
@@ -99,7 +99,7 @@ const createRecipe = async (req, res, next) => {
 		creator,
 	});
 
-	console.log(createdRecipe);
+	// console.log(createdRecipe);
 
 	let user;
 	try {
@@ -139,7 +139,32 @@ const createRecipe = async (req, res, next) => {
 	res.status(201).json({ recipe: createdRecipe.toObject({ getters: true }) });
 };
 
-// ToDo: deleteRecipe?
+const deleteRecipe = async (req, res, next) => {
+	const recipeId = req.params.rid;
+
+	let recipeToDelete;
+	try {
+		recipeToDelete = await Recipe.findById(recipeId);
+	} catch (err) {
+		const error = new HttpError(
+			'Something went wrong, could not find recipe to delete.',
+			500
+		);
+		return next(error);
+	}
+
+	try {
+		await recipeToDelete.remove();
+	} catch (err) {
+		const error = new HttpError(
+			'Something went wrong, could not delete recipe.',
+			500
+		);
+		return next(error);
+	}
+
+	res.status(200).json({ message: 'Recipe deleted successfully!' });
+};
 
 const updateRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
@@ -187,3 +212,4 @@ exports.getRecipeByRecipeId = getRecipeByRecipeId;
 exports.getAllRecipesByUserId = getAllRecipesByUserId;
 exports.createRecipe = createRecipe;
 exports.updateRecipe = updateRecipe;
+exports.deleteRecipe = deleteRecipe;
