@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Recipe = require('../models/recipe');
+const user = require('../models/user');
 const User = require('../models/user');
 
 const getRecipeByRecipeId = async (req, res, next) => {
@@ -144,7 +145,7 @@ const deleteRecipe = async (req, res, next) => {
 
 	let recipeToDelete;
 	try {
-		recipeToDelete = await Recipe.findById(recipeId);
+		recipeToDelete = await Recipe.findById(recipeId).populate('creator');
 	} catch (err) {
 		const error = new HttpError(
 			'Something went wrong, could not find recipe to delete.',
@@ -153,8 +154,22 @@ const deleteRecipe = async (req, res, next) => {
 		return next(error);
 	}
 
+	if (!recipeToDelete) {
+		const error = new HttpError(
+			'Could not find a recipe with the given ID.',
+			404
+		);
+		return next(error);
+	}
+
 	try {
-		await recipeToDelete.remove();
+		const session = await mongoose.startSession();
+		session.startTransaction();
+		await recipeToDelete.remove({ session: session });
+
+		recipeToDelete.creator.recipes.pull(recipeToDelete);
+		await recipeToDelete.creator.save({ session: session });
+		await session.commitTransaction();
 	} catch (err) {
 		const error = new HttpError(
 			'Something went wrong, could not delete recipe.',
