@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -162,6 +164,8 @@ const deleteRecipe = async (req, res, next) => {
 		return next(error);
 	}
 
+	const imagePath = recipeToDelete.image;
+
 	try {
 		const session = await mongoose.startSession();
 		session.startTransaction();
@@ -177,6 +181,10 @@ const deleteRecipe = async (req, res, next) => {
 		);
 		return next(error);
 	}
+
+	fs.unlink(imagePath, err => {
+		console.log(err);
+	});
 
 	res.status(200).json({ message: 'Recipe deleted successfully!' });
 };
