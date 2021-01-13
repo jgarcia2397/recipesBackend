@@ -205,7 +205,15 @@ const userLogin = async (req, res, next) => {
 		);
 	}
 
-	if (existingUser.password !== password) {
+	let isPasswordValid;
+	try {
+		isPasswordValid = await bcrypt.compare(password, existingUser.password);
+	} catch (err) {
+		const error = new HttpError('Login failed, please try again.', 500);
+		return next(error);
+	}
+
+	if (!isPasswordValid) {
 		return next(
 			new HttpError('Provided password is invalid, please try again.', 401)
 		);
