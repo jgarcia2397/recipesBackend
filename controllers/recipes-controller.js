@@ -45,11 +45,11 @@ const getAllRecipesByUserId = async (req, res, next) => {
 		return next(error);
 	}
 
-	if (!recipes || recipes.length === 0) {
-		return next(
-			new HttpError('Could not find recipes for the given user ID.', 404)
-		);
-	}
+	// if (!recipes || recipes.length === 0) {
+	// 	return next(
+	// 		new HttpError('Could not find recipes for the given user ID.', 404)
+	// 	);
+	// }
 
 	res.json({
 		recipes: recipes.map(recipe => recipe.toObject({ getters: true })),
