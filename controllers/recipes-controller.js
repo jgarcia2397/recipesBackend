@@ -164,6 +164,14 @@ const deleteRecipe = async (req, res, next) => {
 		return next(error);
 	}
 
+	if (recipeToDelete.creator.id !== req.userData.userId) {
+		const error = new HttpError(
+			'You are not allowed to delete this recipe.',
+			401
+		);
+		return next(error);
+	}
+
 	const imagePath = recipeToDelete.image;
 
 	try {
