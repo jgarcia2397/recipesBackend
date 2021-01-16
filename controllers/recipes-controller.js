@@ -215,6 +215,14 @@ const updateRecipe = async (req, res, next) => {
 		return next(error);
 	}
 
+	if (recipeToUpdate.creator.toString() !== req.userData.userId) {
+		const error = new HttpError(
+			'You are not allowed to edit this recipe.',
+			401
+		);
+		return next(error);
+	}
+
 	recipeToUpdate.basicDetails = basicDetails;
 	recipeToUpdate.ingredients = [...ingredients];
 	recipeToUpdate.directions = [...directions];
