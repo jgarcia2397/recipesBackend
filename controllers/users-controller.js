@@ -28,6 +28,31 @@ const getUserByUserId = async (req, res, next) => {
 	res.json({ user: user.toObject({ getters: true }) });
 };
 
+const getUserByUserName = async (req, res, next) => {
+	const userName = req.query.username;
+
+	let user;
+	try {
+		// ToDo: In the future if there are many users with the same name, it this will only return one, most likely always the same user
+		// ToDo: This is not case insensitive
+		user = await User.findOne({ name: userName });
+	} catch (err) {
+		const error = new HttpError(
+			'Getting user with given name failed, please try again.',
+			500
+		);
+		return next(error);
+	}
+
+	if (!user) {
+		return next(
+			new HttpError('Could not find a user for the given user name.', 404)
+		);
+	}
+
+	res.json({ user: user.toObject({ getters: true }) });
+};
+
 const updateUserProfile = async (req, res, next) => {
 	const errors = validationResult(req);
 
@@ -254,6 +279,7 @@ const userLogin = async (req, res, next) => {
 };
 
 exports.getUserByUserId = getUserByUserId;
+exports.getUserByUserName = getUserByUserName;
 exports.updateUserProfile = updateUserProfile;
 exports.updateProfilePic = updateProfilePic;
 exports.userSignup = userSignup;

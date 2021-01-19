@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get('/:uid', usersControllers.getUserByUserId);
 
+router.get('/search/name', usersControllers.getUserByUserName);
+
 router.patch(
 	'/:uid',
 	[
