@@ -87,6 +87,14 @@ const updateUserProfile = async (req, res, next) => {
 		return next(error);
 	}
 
+	if (userToUpdate._id !== userId) {
+		const error = new HttpError(
+			'You are not allowed to update this profile.',
+			401
+		);
+		return next(error);
+	}
+
 	userToUpdate.name = name;
 	userToUpdate.title = title;
 	userToUpdate.aboutMe = aboutMe;
@@ -124,6 +132,14 @@ const updateProfilePic = async (req, res, next) => {
 		const error = new HttpError(
 			'Could not find a user for the given user ID.',
 			404
+		);
+		return next(error);
+	}
+
+	if (userToUpdate._id !== userId) {
+		const error = new HttpError(
+			'You are not allowed to update this profile picture.',
+			401
 		);
 		return next(error);
 	}
