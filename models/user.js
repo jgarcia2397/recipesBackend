@@ -10,7 +10,7 @@ const userSchema = new Schema({
 	title: { type: String, required: true },
 	aboutMe: { type: String, required: true },
     favesToCook: { type: String, required: true },
-    image: { type: String, required: true },
+    image: { type: String, required: false },
     recipes: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Recipe' }],
 });
 

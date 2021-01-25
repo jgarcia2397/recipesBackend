@@ -213,8 +213,7 @@ const userSignup = async (req, res, next) => {
 		title: 'Your Title',
 		aboutMe: 'Tell us a bit about yourself!',
 		favesToCook: 'Feel free to brag about your most famous dishes!',
-		image:
-			'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png',
+		image: '',		
 		recipes: [],
 	});
 
