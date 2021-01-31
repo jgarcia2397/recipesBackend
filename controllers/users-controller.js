@@ -34,7 +34,6 @@ const getUserByUserName = async (req, res, next) => {
 	let user;
 	try {
 		// ToDo: In the future if there are many users with the same name, it this will only return one, most likely always the same user
-		// ToDo: This is not case insensitive
 		user = await User.findOne({ name: userName });
 	} catch (err) {
 		const error = new HttpError(

@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const Recipe = require('../models/recipe');
-const user = require('../models/user');
 const User = require('../models/user');
 
 const getRecipeByRecipeId = async (req, res, next) => {
@@ -45,12 +44,6 @@ const getAllRecipesByUserId = async (req, res, next) => {
 		return next(error);
 	}
 
-	// if (!recipes || recipes.length === 0) {
-	// 	return next(
-	// 		new HttpError('Could not find recipes for the given user ID.', 404)
-	// 	);
-	// }
-
 	res.json({
 		recipes: recipes.map(recipe => recipe.toObject({ getters: true })),
 	});
@@ -58,8 +51,6 @@ const getAllRecipesByUserId = async (req, res, next) => {
 
 const createRecipe = async (req, res, next) => {
 	const errors = validationResult(req);
-
-	// console.log(errors);
 
 	if (!errors.isEmpty()) {
 		return next(
@@ -97,12 +88,9 @@ const createRecipe = async (req, res, next) => {
 		basicDetails: basicDetailsObj,
 		ingredients,
 		directions,
-		// image: 'https://i.ytimg.com/vi/RoHWiA6pogg/maxresdefault.jpg',
 		image: req.file.path,
 		creator,
 	});
-
-	// console.log(createdRecipe);
 
 	let user;
 	try {
