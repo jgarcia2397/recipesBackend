@@ -3,8 +3,8 @@
 # environment variables
 nodemon.json
 
-# images
-/uploads/images
+# images - Including this folder in .gitignore causes it to be excluded from deployed project and as a result, requests with image upload will fail
+# /uploads/images
 
 # dependencies
 /node_modules
