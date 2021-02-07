@@ -4,16 +4,49 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const aws = require('aws-sdk');
 
 const recipesRoutes = require('./routes/recipes-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();
+aws.config.region = 'us-east-2';
+
+app.engine('html', require('ejs').renderFile);
 
 app.use(bodyParser.json());
 
 app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+
+app.get('/sign-s3', (req, res) => {
+	const s3 = new aws.S3();
+	const fileName = req.query['file-name'];
+	const fileType = req.query['file-type'];
+	const s3Params = {
+		Bucket: process.env.S3_BUCKET,
+		Key: fileName,
+		Expires: 60,
+		ContentType: fileType,
+		ACL: 'public-read',
+	};
+
+	s3.getSignedUrl('putObject', s3Params, (err, data) => {
+		if (err) {
+			console.log(err);
+			return res.end();
+		}
+		const returnData = {
+			signedRequest: data,
+			url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`,
+		};
+
+		// console.log(JSON.stringify(returnData));
+
+		res.write(JSON.stringify(returnData));
+		res.end();
+	});
+});
 
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -36,7 +69,7 @@ app.use((req, res, next) => {
 // error handling middleware
 app.use((error, req, res, next) => {
 	if (req.file) {
-		fs.unlink(req.file.path, (err) => {
+		fs.unlink(req.file.path, err => {
 			console.log(err);
 		});
 	}
