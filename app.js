@@ -11,7 +11,12 @@ const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();
-aws.config.region = 'us-east-2';
+// aws.config.region = 'us-east-2';
+aws.config.update({
+	'region': 'us-east-2',
+	'accessKeyId': process.env.AWS_ACCESS_ID,
+	'secretAccessKey': process.env.AWS_SECRET_KEY
+});
 
 app.engine('html', require('ejs').renderFile);
 
@@ -19,7 +24,17 @@ app.use(bodyParser.json());
 
 app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
-app.get('/sign-s3', (req, res) => {
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+	);
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+	next();
+});
+
+app.get('/api/sign-s3', (req, res) => {
 	const s3 = new aws.S3();
 	const fileName = req.query['file-name'];
 	const fileType = req.query['file-type'];
@@ -38,24 +53,12 @@ app.get('/sign-s3', (req, res) => {
 		}
 		const returnData = {
 			signedRequest: data,
-			url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`,
+			url: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${fileName}`,
 		};
-
-		// console.log(JSON.stringify(returnData));
 
 		res.write(JSON.stringify(returnData));
 		res.end();
 	});
-});
-
-app.use((req, res, next) => {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-	);
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-	next();
 });
 
 app.use('/api/recipes', recipesRoutes);
