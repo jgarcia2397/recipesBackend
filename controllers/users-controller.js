@@ -152,7 +152,7 @@ const updateProfilePic = async (req, res, next) => {
 		return next(error);
 	}
 
-	userToUpdate.image = req.file.path;
+	userToUpdate.image = req.file.originalname;		// req.file.path when uploading with just multer
 
 	try {
 		await userToUpdate.save();
