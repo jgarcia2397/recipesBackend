@@ -88,7 +88,7 @@ const createRecipe = async (req, res, next) => {
 		basicDetails: basicDetailsObj,
 		ingredients,
 		directions,
-		image: req.file.path,
+		image: req.file.originalname,
 		creator,
 	});
 
