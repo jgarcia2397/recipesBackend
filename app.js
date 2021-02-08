@@ -5,12 +5,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const aws = require('aws-sdk');
+const cors = require('cors');
 
 const recipesRoutes = require('./routes/recipes-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();
+app.use(cors());
+
 // aws.config.region = 'us-east-2';
 aws.config.update({
 	'region': 'us-east-2',
