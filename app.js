@@ -59,9 +59,8 @@ app.get('/api/sign-s3', (req, res) => {
 			url: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${fileName}`,
 		};
 
-		// res.write(JSON.stringify(returnData));
-		// res.end();
-		res.status(200).json(returnData);
+		res.write(JSON.stringify(returnData));
+		res.end();
 	});
 });
 
